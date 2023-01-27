@@ -1,0 +1,5 @@
+*.exe
+current.txt
+error.log
+ddragon-*.tgz
+data/
