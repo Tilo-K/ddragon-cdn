@@ -98,7 +98,7 @@ func loadCurrent() {
 
 		_, err = os.Stat("data")
 		if !os.IsNotExist(err) {
-			err = os.Remove("data")
+			err = os.RemoveAll("data")
 		}
 		checkError(err)
 
