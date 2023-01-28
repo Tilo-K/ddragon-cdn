@@ -13,6 +13,7 @@ import (
 
 	"github.com/alcortesm/tgz"
 	"github.com/otiai10/copy"
+	"github.com/xyproto/unzip"
 )
 
 func getVersions() []string {
@@ -34,6 +35,25 @@ func getVersions() []string {
 func loadDdragon(version string) string {
 	url := fmt.Sprintf("https://ddragon.leagueoflegends.com/cdn/dragontail-%s.tgz", version)
 	filename := "ddragon-" + version + ".tgz"
+
+	if _, err := os.Stat(filename); os.IsNotExist(err) {
+		res, err := http.Get(url)
+		checkError(err)
+		defer res.Body.Close()
+
+		out, err := os.Create(filename)
+		checkError(err)
+		defer out.Close()
+
+		io.Copy(out, res.Body)
+	}
+
+	return filename
+}
+
+func loadRankedEmblems() string {
+	url := fmt.Sprintf("https://static.developer.riotgames.com/docs/lol/ranked-emblems.zip")
+	filename := "ranked-emblems.zip"
 
 	if _, err := os.Stat(filename); os.IsNotExist(err) {
 		res, err := http.Get(url)
@@ -95,6 +115,13 @@ func loadCurrent() {
 
 		err = os.Rename(src, dst)
 		checkError(err)
+
+		emblemsFile := loadRankedEmblems()
+		export, _ := filepath.Abs(filepath.Join("data", "ranked-emblems"))
+		err = unzip.Extract(emblemsFile, export)
+		checkError(err)
+
+		os.RemoveAll(emblemsFile)
 	}
 }
 
