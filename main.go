@@ -127,8 +127,7 @@ func loadCurrent() {
 
 func cors(fs http.Handler) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// do your cors stuff
-		// return if you do not want the FileServer handle a specific request
+		(*w).Header().Set("Access-Control-Allow-Origin", "*")
 
 		fs.ServeHTTP(w, r)
 	}
