@@ -125,6 +125,15 @@ func loadCurrent() {
 	}
 }
 
+func cors(fs http.Handler) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// do your cors stuff
+		// return if you do not want the FileServer handle a specific request
+
+		fs.ServeHTTP(w, r)
+	}
+}
+
 func main() {
 	loadCurrent()
 
@@ -139,7 +148,7 @@ func main() {
 	}()
 
 	fs := http.FileServer(http.Dir("./data"))
-	http.Handle("/", fs)
+	http.Handle("/", cors(fs))
 
 	log.Print("Listening on :60002...")
 	err := http.ListenAndServe(":60002", nil)
