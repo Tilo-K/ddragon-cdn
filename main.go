@@ -117,6 +117,9 @@ func getVersions() []string {
 
 	res, err := http.Get(url)
 	checkError(err)
+	if err != nil{
+		return nil
+	}
 	defer res.Body.Close()
 
 	body, err := ioutil.ReadAll(res.Body)
@@ -185,7 +188,10 @@ func getCurrentVersion() string {
 
 func loadCurrent() {
 	versions := getVersions()
-	if getCurrentVersion() != versions[0] {
+	if versions == nil{
+		return
+	}
+	if getCurrentVersion() != versions[0]{
 		file := loadDdragon(versions[0])
 		ioutil.WriteFile("current.txt", []byte(versions[0]), 0777)
 
