@@ -252,7 +252,7 @@ func main() {
 
 	fs := http.FileServer(http.Dir(filepath.Join(storageDir, "data")))
 	http.Handle("/", cors(fs))
-	port := os.Getenv("Port")
+	port := os.Getenv("PORT")
 
 	if port == ""{
 		port = "60002"
