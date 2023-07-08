@@ -132,8 +132,9 @@ func getVersions() []string {
 }
 
 func loadDdragon(version string) string {
+	storageDir := os.Getenv("STORAGE_DIR")
 	url := fmt.Sprintf("https://ddragon.leagueoflegends.com/cdn/dragontail-%s.tgz", version)
-	filename := "ddragon-" + version + ".tgz"
+	filename := filepath.Join(storageDir, "ddragon-" + version + ".tgz")
 
 	if _, err := os.Stat(filename); os.IsNotExist(err) {
 		res, err := http.Get(url)
@@ -151,8 +152,9 @@ func loadDdragon(version string) string {
 }
 
 func loadRankedEmblems() string {
+	storageDir := os.Getenv("STORAGE_DIR")
 	url := fmt.Sprintf("https://static.developer.riotgames.com/docs/lol/ranked-emblems.zip")
-	filename := "ranked-emblems.zip"
+	filename := filepath.Join(storageDir, "ranked-emblems.zip")
 
 	if _, err := os.Stat(filename); os.IsNotExist(err) {
 		res, err := http.Get(url)
@@ -170,41 +172,43 @@ func loadRankedEmblems() string {
 }
 
 func getCurrentVersion() string {
-	_, err := os.Stat("current.txt")
+	storageDir := os.Getenv("STORAGE_DIR")
+	_, err := os.Stat(filepath.Join(storageDir, "current.txt"))
 	if os.IsNotExist(err) {
 		return ""
 	}
 
-	_, err = os.Stat("data")
+	_, err = os.Stat(filepath.Join(storageDir, "data"))
 	if os.IsNotExist(err) {
 		return ""
 	}
 
-	data, err := ioutil.ReadFile("current.txt")
+	data, err := ioutil.ReadFile(filepath.Join(storageDir, "current.txt"))
 	checkError(err)
 
 	return string(data)
 }
 
 func loadCurrent() {
+	storageDir := os.Getenv("STORAGE_DIR")
 	versions := getVersions()
 	if versions == nil{
 		return
 	}
 	if getCurrentVersion() != versions[0]{
 		file := loadDdragon(versions[0])
-		ioutil.WriteFile("current.txt", []byte(versions[0]), 0777)
+		ioutil.WriteFile(filepath.Join(storageDir, "current.txt"), []byte(versions[0]), 0777)
 
 		path, err := tgz.Extract(file)
 		checkError(err)
 
-		_, err = os.Stat("data")
+		_, err = os.Stat(filepath.Join(storageDir, "data"))
 		if !os.IsNotExist(err) {
-			err = os.RemoveAll("data")
+			err = os.RemoveAll(filepath.Join(storageDir, "data"))
 		}
 		checkError(err)
 
-		dest, err := filepath.Abs("./data")
+		dest, err := filepath.Abs(filepath.Join(storageDir, "data"))
 		checkError(err)
 		err = os.Rename(path, dest)
 		if err != nil {
@@ -212,14 +216,14 @@ func loadCurrent() {
 		}
 		os.RemoveAll(path)
 
-		src, _ := filepath.Abs(filepath.Join("data", versions[0]))
-		dst, _ := filepath.Abs(filepath.Join("data", "latest"))
+		src, _ := filepath.Abs(filepath.Join(storageDir, "data", versions[0]))
+		dst, _ := filepath.Abs(filepath.Join(storageDir, "data", "latest"))
 
 		err = os.Rename(src, dst)
 		checkError(err)
 
-		export, _ := filepath.Abs(filepath.Join("data", "ranked-emblems"))
-		err = CopyDirectory("./ranked-emblems", export)
+		export, _ := filepath.Abs(filepath.Join(storageDir, "data", "ranked-emblems"))
+		err = CopyDirectory(filepath.Join(storageDir, "ranked-emblems"), export)
 		checkError(err)
 	}
 }
@@ -233,6 +237,7 @@ func cors(fs http.Handler) http.HandlerFunc {
 }
 
 func main() {
+	storageDir := os.Getenv("STORAGE_DIR")
 	loadCurrent()
 
 	go func() {
@@ -245,7 +250,7 @@ func main() {
 		}
 	}()
 
-	fs := http.FileServer(http.Dir("./data"))
+	fs := http.FileServer(http.Dir(filepath.Join(storageDir, "data")))
 	http.Handle("/", cors(fs))
 
 	log.Print("Listening on :60002...")
