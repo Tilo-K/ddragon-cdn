@@ -252,9 +252,14 @@ func main() {
 
 	fs := http.FileServer(http.Dir(filepath.Join(storageDir, "data")))
 	http.Handle("/", cors(fs))
+	port := os.Getenv("Port")
 
-	log.Print("Listening on :60002...")
-	err := http.ListenAndServe(":60002", nil)
+	if port == ""{
+		port = "60002"
+	}
+
+	log.Print("Listening on :" + port + "...")
+	err := http.ListenAndServe(":" + port, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
