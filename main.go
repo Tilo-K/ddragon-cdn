@@ -117,7 +117,7 @@ func getVersions() []string {
 
 	res, err := http.Get(url)
 	checkError(err)
-	if err != nil{
+	if err != nil {
 		return nil
 	}
 	defer res.Body.Close()
@@ -134,7 +134,7 @@ func getVersions() []string {
 func loadDdragon(version string) string {
 	storageDir := os.Getenv("STORAGE_DIR")
 	url := fmt.Sprintf("https://ddragon.leagueoflegends.com/cdn/dragontail-%s.tgz", version)
-	filename := filepath.Join(storageDir, "ddragon-" + version + ".tgz")
+	filename := filepath.Join(storageDir, "ddragon-"+version+".tgz")
 
 	if _, err := os.Stat(filename); os.IsNotExist(err) {
 		res, err := http.Get(url)
@@ -189,13 +189,23 @@ func getCurrentVersion() string {
 	return string(data)
 }
 
+func deleteTgz() {
+	files, err := filepath.Glob("ddragon*.tgz")
+	checkError(err)
+	for _, file := range files {
+		fmt.Printf("Deleting %s", file)
+		os.RemoveAll(file)
+	}
+}
+
 func loadCurrent() {
+	deleteTgz()
 	storageDir := os.Getenv("STORAGE_DIR")
 	versions := getVersions()
-	if versions == nil{
+	if versions == nil {
 		return
 	}
-	if getCurrentVersion() != versions[0]{
+	if getCurrentVersion() != versions[0] {
 		file := loadDdragon(versions[0])
 		ioutil.WriteFile(filepath.Join(storageDir, "current.txt"), []byte(versions[0]), 0777)
 
@@ -223,7 +233,7 @@ func loadCurrent() {
 		checkError(err)
 
 		export, _ := filepath.Abs(filepath.Join(storageDir, "data", "ranked-emblems"))
-		err = CopyDirectory(filepath.Join(storageDir, "ranked-emblems"), export)
+		err = CopyDirectory("ranked-emblems", export)
 		checkError(err)
 	}
 }
@@ -254,12 +264,12 @@ func main() {
 	http.Handle("/", cors(fs))
 	port := os.Getenv("PORT")
 
-	if port == ""{
+	if port == "" {
 		port = "60002"
 	}
 
 	log.Print("Listening on :" + port + "...")
-	err := http.ListenAndServe(":" + port, nil)
+	err := http.ListenAndServe(":"+port, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
