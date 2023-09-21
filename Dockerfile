@@ -5,7 +5,7 @@ RUN mkdir -p /mnt/data
 
 WORKDIR /
 COPY . .
-RUN go build -o cdn
+RUN go build -ldflags "-s -w" -o cdn
 
 CMD ["./cdn"]
 EXPOSE 8080
