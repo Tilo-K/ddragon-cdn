@@ -3,3 +3,4 @@ current.txt
 error.log
 ddragon-*.tgz
 data/
+*.log
