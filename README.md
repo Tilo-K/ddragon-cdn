@@ -1,9 +1,7 @@
 
-# DDragon CDN
+<div style="display: flex; justify-content: center; align-items: center; width: 100%;">
 
-<div style="display: flex; justif-content: center; align-items: center; width: 100%;">
-
-![Logo](logo.png)
+<img src="https://raw.githubusercontent.com/Tilo-K/ddragon-cdn/main/logos/logo.png" style="width: 300px"/>
 
 </div>
 
