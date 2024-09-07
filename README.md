@@ -1,9 +1,9 @@
 
-<div style="display: flex; justify-content: center; align-items: center; width: 100%;">
+<p align="center">
 
 <img src="https://raw.githubusercontent.com/Tilo-K/ddragon-cdn/main/logos/logo.png" style="width: 300px"/>
 
-</div>
+</p>
 
 <div style="display: flex; gap: 1rem;">
 
