@@ -40,7 +40,7 @@ To run this project, you will need to add the following environment variables to
 
 Contributions are always welcome!
 
-Just create a PR if you have somethinh usefull to add.
+Just create a PR if you have something usefull to add.
 Alternativly create an issue if there is something you would like to see.
 
 Please adhere to this project's [code of conduct](https://tilok.dev/coc).
